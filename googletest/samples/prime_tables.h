@@ -1,62 +1,35 @@
-// Copyright 2008 Google Inc.
-// All Rights Reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-// This provides interface PrimeTable that determines whether a number is a
-// prime and determines a next prime number. This interface is used
-// in Google Test samples demonstrating use of parameterized tests.
+// 이 파일은 PrimeTable 인터페이스를 정의하며,
+// 해당 인터페이스를 구현하는 클래스를 포함하고 있습니다.
+// 이 인터페이스는 숫자가 소수인지 판별하고,
+// 주어진 숫자보다 큰 다음 소수를 찾는 기능을 제공합니다.
+// 이 인터페이스는 Google Test의 매개변수화된 테스트(Parameterized Test) 예제에서 사용됩니다.
 
 #ifndef GOOGLETEST_SAMPLES_PRIME_TABLES_H_
 #define GOOGLETEST_SAMPLES_PRIME_TABLES_H_
 
 #include <algorithm>
 
-// The prime table interface.
+// PrimeTable 인터페이스 정의
 class PrimeTable {
  public:
   virtual ~PrimeTable() = default;
 
-  // Returns true if and only if n is a prime number.
+  // 숫자 n이 소수인지 여부를 반환한다.
   virtual bool IsPrime(int n) const = 0;
 
-  // Returns the smallest prime number greater than p; or returns -1
-  // if the next prime is beyond the capacity of the table.
+  // 주어진 숫자 p보다 큰 가장 작은 소수를 반환한다.
+  // 단, 가능한 소수의 범위를 초과하면 -1을 반환한다.
   virtual int GetNextPrime(int p) const = 0;
 };
 
-// Implementation #1 calculates the primes on-the-fly.
+// 구현 방법 #1: 소수를 **실시간으로 계산(On-the-fly)** 하는 클래스
 class OnTheFlyPrimeTable : public PrimeTable {
  public:
   bool IsPrime(int n) const override {
     if (n <= 1) return false;
 
     for (int i = 2; i * i <= n; i++) {
-      // n is divisible by an integer other than 1 and itself.
+      // n이 1과 자기 자신을 제외한 다른 수로 나누어지면 소수가 아니다.
       if ((n % i) == 0) return false;
     }
 
@@ -72,53 +45,54 @@ class OnTheFlyPrimeTable : public PrimeTable {
   }
 };
 
-// Implementation #2 pre-calculates the primes and stores the result
-// in an array.
+// 구현 방법 #2: **소수를 미리 계산하여 배열에 저장**하는 클래스
 class PreCalculatedPrimeTable : public PrimeTable {
  public:
-  // 'max' specifies the maximum number the prime table holds.
+  // 'max'는 이 테이블에서 저장할 최대 숫자를 지정한다.
   explicit PreCalculatedPrimeTable(int max)
       : is_prime_size_(std::max(1, max + 1)),
         is_prime_(new bool[static_cast<size_t>(is_prime_size_)]) {
     CalculatePrimesUpTo(is_prime_size_ - 1);
   }
+
   ~PreCalculatedPrimeTable() override { delete[] is_prime_; }
 
+  // 숫자 n이 소수인지 여부를 확인한다.
   bool IsPrime(int n) const override {
     return 0 <= n && n < is_prime_size_ && is_prime_[n];
   }
 
+  // 주어진 숫자 p보다 큰 가장 작은 소수를 반환한다.
   int GetNextPrime(int p) const override {
     for (int n = p + 1; n < is_prime_size_; n++) {
       if (is_prime_[n]) return n;
     }
-
     return -1;
   }
 
  private:
+  // 주어진 최대 값까지의 소수를 계산하여 배열에 저장한다.
   void CalculatePrimesUpTo(int max) {
     ::std::fill(is_prime_, is_prime_ + is_prime_size_, true);
     is_prime_[0] = is_prime_[1] = false;
 
-    // Checks every candidate for prime number (we know that 2 is the only even
-    // prime).
+    // 모든 가능한 소수를 검사한다. (2는 유일한 짝수 소수)
     for (int i = 2; i * i <= max; i += i % 2 + 1) {
       if (!is_prime_[i]) continue;
 
-      // Marks all multiples of i (except i itself) as non-prime.
-      // We are starting here from i-th multiplier, because all smaller
-      // complex numbers were already marked.
+      // i의 배수를 모두 소수가 아닌 것으로 표시한다.
+      // 이미 더 작은 배수들은 이전 루프에서 확인되었으므로, i의 제곱부터 시작한다.
       for (int j = i * i; j <= max; j += i) {
         is_prime_[j] = false;
       }
     }
   }
 
-  const int is_prime_size_;
-  bool* const is_prime_;
+  const int is_prime_size_;  // 배열 크기
+  bool* const is_prime_;      // 소수 여부를 저장하는 배열
 
-  // Disables compiler warning "assignment operator could not be generated."
+  // 컴파일러 경고 "대입 연산자를 자동으로 생성할 수 없음"을 방지하기 위해 
+  // 대입 연산자를 비활성화한다.
   void operator=(const PreCalculatedPrimeTable& rhs);
 };
 
