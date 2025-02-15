@@ -1,32 +1,8 @@
-// Copyright 2005, Google Inc.
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+/**
+ * 1. 여러 개의 테스트가 공통으로 사용하는 초기화 코드(SetUp)와 정리 코드(TearDown)를 하나의 클래스로 묶는 방법.
+ * 2. 개별 테스트에서 중복되는 초기화 코드 작성을 피하고, 테스트를 독립적으로 실행할 수 있도록 도와줌.
+ * 3. Google Test에서는 TEST_F(테스트픽스처, 테스트명) 형식으로 테스트를 정의함.
+ */
 // A sample program demonstrating using Google C++ testing framework.
 
 // In this example, we use a more advanced feature of Google Test called
@@ -34,7 +10,7 @@
 //
 // A test fixture is a place to hold objects and functions shared by
 // all tests in a test case.  Using a test fixture avoids duplicating
-// the test code necessary to initialize and cleanup those common
+// the test code ncdecessary to initialize and cleanup those common
 // objects for each test.  It is also useful for defining sub-routines
 // that your tests need to invoke a lot.
 //
