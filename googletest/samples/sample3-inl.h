@@ -1,86 +1,74 @@
 // Copyright 2005, Google Inc.
-// All rights reserved.
+// 모든 권리 보유.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
+// 소스 코드 및 바이너리 형태로 수정 여부와 관계없이 재배포 및 사용이 허용됩니다.
+// 단, 다음 조건을 충족해야 합니다:
 //
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
+//     * 소스 코드 재배포 시 위의 저작권 공지, 이 조건 목록, 그리고 아래 면책 조항을 유지해야 합니다.
+//     * 바이너리 형태로 재배포할 경우, 배포 문서 또는 기타 자료에 위의 저작권 공지, 이 조건 목록, 
+//       그리고 아래 면책 조항을 포함해야 합니다.
+//     * Google Inc.의 이름이나 기여자의 이름을 사용하여 파생 제품을 홍보하거나 보증할 수 없습니다.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// 이 소프트웨어는 "있는 그대로(AS IS)" 제공되며, 명시적이거나 암시적인 어떠한 보증도 없습니다. 
+// 여기에는 상품성 및 특정 목적에 대한 적합성에 대한 암시적 보증도 포함됩니다.
+// 저작권 소유자 또는 기여자는 소프트웨어 사용으로 인해 발생하는 
+// 직접적, 간접적, 부수적, 특수적, 징벌적 또는 결과적 손해(예: 대체 상품 또는 서비스 조달, 
+// 사용 손실, 데이터 손실, 이익 손실, 업무 중단 등)에 대해 어떠한 책임도 지지 않습니다.
+// 이는 계약, 엄격한 책임, 불법 행위(과실 포함) 등의 법적 이론에 따라 발생한 손해에도 적용됩니다.
+// 이러한 손해 발생 가능성을 사전에 인지했는지 여부와 관계없이 면책됩니다.
 
-// A sample program demonstrating using Google C++ testing framework.
+// Google C++ 테스트 프레임워크를 사용하는 샘플 프로그램.
 
 #ifndef GOOGLETEST_SAMPLES_SAMPLE3_INL_H_
 #define GOOGLETEST_SAMPLES_SAMPLE3_INL_H_
 
 #include <stddef.h>
 
-// Queue is a simple queue implemented as a singled-linked list.
+// Queue는 단일 연결 리스트(Singly Linked List)로 구현된 간단한 큐입니다.
 //
-// The element type must support copy constructor.
-template <typename E>  // E is the element type
+// 요소 타입(E)은 반드시 복사 생성자를 지원해야 합니다.
+template <typename E>  // E는 요소 타입
 class Queue;
 
-// QueueNode is a node in a Queue, which consists of an element of
-// type E and a pointer to the next node.
-template <typename E>  // E is the element type
+// QueueNode는 Queue의 노드이며, 요소(E)와 다음 노드를 가리키는 포인터를 포함합니다.
+template <typename E>  // E는 요소 타입
 class QueueNode {
   friend class Queue<E>;
 
  public:
-  // Gets the element in this node.
+  // 이 노드에 저장된 요소를 가져옵니다.
   const E& element() const { return element_; }
 
-  // Gets the next node in the queue.
+  // 큐에서 다음 노드를 가져옵니다.
   QueueNode* next() { return next_; }
   const QueueNode* next() const { return next_; }
 
  private:
-  // Creates a node with a given element value.  The next pointer is
-  // set to NULL.
+  // 주어진 요소 값을 가진 노드를 생성합니다. next 포인터는 NULL로 설정됩니다.
   explicit QueueNode(const E& an_element)
       : element_(an_element), next_(nullptr) {}
 
-  // We disable the default assignment operator and copy c'tor.
+  // 기본 대입 연산자 및 복사 생성자를 비활성화합니다.
   const QueueNode& operator=(const QueueNode&);
   QueueNode(const QueueNode&);
 
-  E element_;
-  QueueNode* next_;
+  E element_;        // 노드가 저장하는 요소
+  QueueNode* next_;  // 다음 노드를 가리키는 포인터
 };
 
-template <typename E>  // E is the element type.
+template <typename E>  // E는 요소 타입
 class Queue {
  public:
-  // Creates an empty queue.
+  // 빈 큐를 생성합니다.
   Queue() : head_(nullptr), last_(nullptr), size_(0) {}
 
-  // D'tor.  Clears the queue.
+  // 소멸자. 큐를 비웁니다.
   ~Queue() { Clear(); }
 
-  // Clears the queue.
+  // 큐를 비웁니다.
   void Clear() {
     if (size_ > 0) {
-      // 1. Deletes every node.
+      // 1. 모든 노드를 삭제합니다.
       QueueNode<E>* node = head_;
       QueueNode<E>* next = node->next();
       for (;;) {
@@ -90,27 +78,26 @@ class Queue {
         next = node->next();
       }
 
-      // 2. Resets the member variables.
+      // 2. 멤버 변수를 초기화합니다.
       head_ = last_ = nullptr;
       size_ = 0;
     }
   }
 
-  // Gets the number of elements.
+  // 요소 개수를 반환합니다.
   size_t Size() const { return size_; }
 
-  // Gets the first element of the queue, or NULL if the queue is empty.
+  // 큐의 첫 번째 요소를 가져옵니다. 큐가 비어 있으면 NULL을 반환합니다.
   QueueNode<E>* Head() { return head_; }
   const QueueNode<E>* Head() const { return head_; }
 
-  // Gets the last element of the queue, or NULL if the queue is empty.
+  // 큐의 마지막 요소를 가져옵니다. 큐가 비어 있으면 NULL을 반환합니다.
   QueueNode<E>* Last() { return last_; }
   const QueueNode<E>* Last() const { return last_; }
 
-  // Adds an element to the end of the queue.  A copy of the element is
-  // created using the copy constructor, and then stored in the queue.
-  // Changes made to the element in the queue doesn't affect the source
-  // object, and vice versa.
+  // 큐의 끝에 요소를 추가합니다.
+  // 요소의 복사본이 생성되며, 큐에 저장됩니다.
+  // 큐에 저장된 요소를 변경해도 원본 객체에는 영향을 주지 않습니다.
   void Enqueue(const E& element) {
     QueueNode<E>* new_node = new QueueNode<E>(element);
 
@@ -124,8 +111,7 @@ class Queue {
     }
   }
 
-  // Removes the head of the queue and returns it.  Returns NULL if
-  // the queue is empty.
+  // 큐의 첫 번째 요소를 제거하고 반환합니다. 큐가 비어 있으면 NULL을 반환합니다.
   E* Dequeue() {
     if (size_ == 0) {
       return nullptr;
@@ -144,9 +130,8 @@ class Queue {
     return element;
   }
 
-  // Applies a function/functor on each element of the queue, and
-  // returns the result in a new queue.  The original queue is not
-  // affected.
+  // 큐의 각 요소에 함수 또는 펑터(Functor)를 적용하고,
+  // 결과를 새로운 큐로 반환합니다. 기존 큐는 변경되지 않습니다.
   template <typename F>
   Queue* Map(F function) const {
     Queue* new_queue = new Queue();
@@ -159,11 +144,11 @@ class Queue {
   }
 
  private:
-  QueueNode<E>* head_;  // The first node of the queue.
-  QueueNode<E>* last_;  // The last node of the queue.
-  size_t size_;         // The number of elements in the queue.
+  QueueNode<E>* head_;  // 큐의 첫 번째 노드
+  QueueNode<E>* last_;  // 큐의 마지막 노드
+  size_t size_;         // 큐에 저장된 요소 개수
 
-  // We disallow copying a queue.
+  // 큐의 복사를 금지합니다.
   Queue(const Queue&);
   const Queue& operator=(const Queue&);
 };
