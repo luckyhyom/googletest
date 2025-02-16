@@ -176,6 +176,7 @@ if (gtest_build_samples)
   cxx_executable(sample8_unittest samples gtest_main)
   cxx_executable(sample9_unittest samples gtest)
   cxx_executable(sample10_unittest samples gtest)
+  cxx_executable(adder_unittest samples gtest_main samples/adder_unittest.cc)
 endif()
 
 ########################################################################
