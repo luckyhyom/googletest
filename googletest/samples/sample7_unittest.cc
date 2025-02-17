@@ -1,3 +1,10 @@
+/**
+  📌 PrimeTable 인터페이스를 구현하는 여러 개의 클래스를 하나의 테스트 케이스에서 검증
+  📌 OnTheFlyPrimeTable, PreCalculatedPrimeTable<1000>을 테스트
+  📌 객체 생성을 팩토리 함수(CreatePrimeTableFunc)로 추상화
+  📌 Value-Parameterized Test를 사용하여 같은 테스트를 다양한 구현체에 대해 실행
+ */
+
 // This sample shows how to test common properties of multiple
 // implementations of an interface (aka interface tests) using
 // value-parameterized tests. Each test in the test case has
@@ -17,6 +24,10 @@ using ::testing::Values;
 // instead of reusing them.  In this sample we will define a simple factory
 // function for PrimeTable objects.  We will instantiate objects in test's
 // SetUp() method and delete them in TearDown() method.
+/**
+  📌 각 테스트에서 new와 delete를 반복해야 함 → 메모리 관리가 번거로움
+  📌 테스트 코드가 객체 생성 방법에 의존적 → 객체 생성 방식이 바뀌면 모든 테스트를 수정해야 함
+ */
 typedef PrimeTable* CreatePrimeTableFunc();
 
 PrimeTable* CreateOnTheFlyPrimeTable() { return new OnTheFlyPrimeTable(); }
@@ -30,6 +41,12 @@ PrimeTable* CreatePreCalculatedPrimeTable() {
 // can refer to the test parameter by GetParam().  In this case, the test
 // parameter is a factory function which we call in fixture's SetUp() to
 // create and store an instance of PrimeTable.
+/**
+  📌 TestWithParam<CreatePrimeTableFunc*>를 상속
+  📌 GetParam()을 호출하면 팩토리 함수 포인터(CreatePrimeTableFunc*)를 얻을 수 있음
+  📌 SetUp()에서 팩토리 함수를 호출해 table_을 생성
+  📌 TearDown()에서 객체를 삭제하여 메모리 누수 방지
+ */
 class PrimeTableTestSmpl7 : public TestWithParam<CreatePrimeTableFunc*> {
  public:
   ~PrimeTableTestSmpl7() override { delete table_; }
