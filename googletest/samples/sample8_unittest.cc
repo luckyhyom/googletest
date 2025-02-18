@@ -1,3 +1,14 @@
+/*
+  📌 이 코드는 HybridPrimeTable 클래스가 정상적으로 동작하는지 확인하기 위해 Google Test의 **값 매개변수화 테스트(TEST_P)**를 활용한 예제이다.
+  📌 HybridPrimeTable은 두 개의 소수 판별 알고리즘(OnTheFlyPrimeTable과 PreCalculatedPrimeTable)을 조합하여 동작하는 클래스로,
+  📌 다양한 환경(메모리 제한, 성능 고려 등)에서 어떻게 작동하는지를 테스트해야 한다.
+
+  1. 상태 기반 검증이다.
+  2. Combine(Bool(), Values(1, 10))); 에서 사용되는 매크로를 활용하자.
+      Range(1, 11, 1)은 1부터 10까지의 숫자를 자동 생성
+      → start=1, end=11 (끝값은 포함되지 않음), step=1
+  3. 
+*/
 // This sample shows how to test code relying on some global flag variables.
 // Combine() helps with generating all possible combinations of such flags,
 // and each test is given one combination as a parameter.
@@ -16,6 +27,12 @@ namespace {
 // appropriate under the circumstances. But in low memory conditions, it can be
 // told to instantiate without PrecalcPrimeTable instance at all and use only
 // OnTheFlyPrimeTable.
+
+/*
+  📌 force_on_the_fly 플래그가 true → PreCalculatedPrimeTable 없이 OnTheFlyPrimeTable만 사용
+  📌 force_on_the_fly 플래그가 false → PreCalculatedPrimeTable을 함께 사용하여 더 빠른 성능 제공
+  📌 max_precalculated 값에 따라 PreCalculatedPrimeTable이 저장하는 최대 소수 크기가 결정됨
+*/
 class HybridPrimeTable : public PrimeTable {
  public:
   HybridPrimeTable(bool force_on_the_fly, int max_precalculated)
