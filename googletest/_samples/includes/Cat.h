@@ -1,9 +1,10 @@
+#include <iostream>
 #include "CatFood.h"
-
 class Cat {
   public:
     void Eat(ICatFood& food);
-    void GetAngry();
+    std::string Say();
   private:
+    void GetAngry();
     int satiety = 0;
 };
